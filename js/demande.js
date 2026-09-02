@@ -18,10 +18,16 @@ const CONFIG = {
   // Laissez à null ce que vous ne voulez pas annoncer : la ligne disparaît
   // alors de l'estimation. N'inventez rien ici, ces chiffres vous engagent.
   durees: {
-    ordinateur: { min: 1, max: 2 },
+    // le plus large : nettoyer un système lent tient en 1 à 2 h, mais un
+    // ordinateur qui ne démarre plus peut demander une réinstallation
+    ordinateur: { min: 1, max: 3 },
+    // travail borné : configuration du routeur, couverture, reconnexions
     internet:   { min: 1, max: 2 },
+    // moins prévisible qu'il n'y paraît : entre les pilotes, la configuration
+    // réseau et la numérisation vers email, cela s'éternise volontiers
     imprimante: { min: 1, max: 2 },
-    autre:      { min: 1, max: 2 }
+    // inconnu par définition : aucune durée n'est annoncée
+    autre:      null
   }
 };
 
@@ -107,34 +113,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!souci && !saisie) { estim.hidden = true; estim.innerHTML = ''; return; }
 
-    const lignes = [];
-    lignes.push(['À distance', 'CHF ' + TARIFS.distance + '.– de l’heure']);
-    if (commune) {
-      lignes.push(['Chez vous à ' + commune,
-        'CHF ' + TARIFS.domicile + '.– de l’heure, plus ' + TARIFS.deplacement + '.– de déplacement']);
-    }
-
     const d = souci ? CONFIG.durees[souci] : null;
-    if (d && typeof d.min === 'number' && typeof d.max === 'number') {
+    const aDuree = d && typeof d.min === 'number' && typeof d.max === 'number';
+
+    // un montant, pas un tarif horaire : le client veut savoir ce qu'il paiera
+    const fr = (n) => 'CHF ' + n + '.–';
+    const montant = (parHeure, fixe) => {
+      if (!aDuree) return fr(parHeure) + ' de l’heure' + (fixe ? ', plus ' + fr(fixe) + ' de déplacement' : '');
+      const bas = parHeure * d.min + (fixe || 0);
+      const haut = parHeure * d.max + (fixe || 0);
+      return bas === haut ? fr(bas) : fr(bas) + ' à ' + haut + '.–';
+    };
+
+    const lignes = [];
+    if (aDuree) {
       const t = d.min === d.max
         ? d.min + (d.min > 1 ? ' heures' : ' heure')
-        : d.min + ' à ' + d.max + (d.max > 1 ? ' heures' : ' heure');
-      lignes.push(['Durée habituelle', 'environ ' + t]);
+        : d.min + ' à ' + d.max + ' heures';
+      lignes.push(['Durée la plus fréquente', t]);
     }
+    lignes.push(['À distance', montant(TARIFS.distance, 0)]);
+    if (commune) lignes.push(['Chez vous à ' + commune, montant(TARIFS.domicile, TARIFS.deplacement)]);
 
     const intro = souci
-      ? 'Pour ' + SOUCIS[souci] + (commune ? ', à ' + commune : '') + ' :'
-      : 'Voici ce que cela coûterait :';
+      ? 'Pour ' + SOUCIS[souci] + (commune ? ', à ' + commune : '') + ' :'
+      : 'Voici ce que cela coûterait :';
+
+    const bas = [];
+    bas.push('Facturation au pro rata temporis, une heure au minimum.');
+    if (aDuree) bas.push('Si cela devait prendre plus longtemps, je vous préviens avant de continuer.');
+    bas.push(commune === false
+      ? 'Le déplacement chez vous reste à confirmer ensemble.'
+      : 'Beaucoup de problèmes se règlent à distance, sans attendre de rendez-vous.');
 
     estim.innerHTML =
       '<h3>Votre estimation</h3>' +
       '<p class="mention">' + intro + '</p>' +
       '<dl>' + lignes.map(([t, v]) =>
         '<div class="ligne"><dt>' + t + '</dt><dd>' + v + '</dd></div>').join('') + '</dl>' +
-      '<p class="mention">Facturation au pro rata temporis, une heure au minimum. ' +
-      (commune === false
-        ? 'Le déplacement chez vous reste à confirmer ensemble.'
-        : 'Beaucoup de problèmes se règlent à distance, sans attendre de rendez-vous.') + '</p>';
+      '<p class="mention">' + bas.join(' ') + '</p>';
     estim.hidden = false;
   }
 

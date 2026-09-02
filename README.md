@@ -132,8 +132,24 @@ Tout est regroupé dans le bloc `CONFIG` en tête de `js/demande.js` :
 | `calendlyUrl` | Un encadré prend la place du calendrier |
 | `durees` | La ligne « durée habituelle » disparaît de l'estimation |
 
-**`durees` doit ne contenir que vos chiffres réels.** Ils s'affichent au client avant qu'il ne
-vous contacte : ils vous engagent. Ils valent aujourd'hui 1 à 2 heures pour tous les types.
+**`durees` ne doit contenir que vos chiffres réels.** Ils s'affichent au client avant qu'il ne
+vous contacte : ils vous engagent.
+
+| Type | Durée | À distance | Chez vous |
+|---|---|---|---|
+| Ordinateur | 1 à 3 h | CHF 80.- à 240.- | CHF 120.- à 320.- |
+| Connexion Internet | 1 à 2 h | CHF 80.- à 160.- | CHF 120.- à 220.- |
+| Imprimante | 1 à 2 h | CHF 80.- à 160.- | CHF 120.- à 220.- |
+| Autre chose | aucune | tarif horaire seul | tarif horaire seul |
+
+L'encadré affiche un **montant total**, pas un tarif horaire : le client ne se demande pas combien
+d'heures, il se demande combien il va payer. Mettre une durée à `null` fait disparaître la ligne
+et retomber sur les tarifs horaires, ce qui est le bon comportement pour « Autre chose », un
+problème indéfini sur lequel on ne peut rien promettre.
+
+L'encadré se termine par « Si cela devait prendre plus longtemps, je vous préviens avant de
+continuer. » C'est la phrase la plus utile du bloc : la peur d'un client n'est pas le tarif, c'est
+la facture sans plafond. Aucune fourchette ne règle cette peur, cette promesse si.
 
 ### Redéployer le Worker
 
