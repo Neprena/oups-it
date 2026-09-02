@@ -56,9 +56,11 @@ Deux pièges qui l'avaient fait exploser :
 5. **Article 4 des conditions générales** : il mentionne le paiement par carte bancaire,
    que la page n'annonce pas. Texte juridique laissé intact, à trancher.
 6. **Le logo imprimé** porte `yann@oups-ordi.ch`, le site affiche `contact@oups.it`.
-7. **Les trois valeurs de `CONFIG`** dans `js/demande.js` : adresse du Worker, lien Calendly,
-   fourchettes de durée. Voir la section « Formulaire de demande ».
-8. **L'article 9 des conditions générales** ne mentionne ni le formulaire, ni Calendly.
+7. **L'article 9 des conditions générales** ne mentionne ni le formulaire, ni Calendly, alors que
+   des données personnelles transitent désormais par Cloudflare et par Calendly.
+8. **L'offre Calendly gratuite ne permet qu'un type d'événement.** Le bloc de réservation annonce
+   donc un premier échange à distance. Distinguer « à distance » et « à domicile » demanderait
+   l'offre payante.
 
 ## Formulaire de demande
 
@@ -67,31 +69,50 @@ contient un Worker Cloudflare qui joue ce rôle : il reçoit la demande et vous 
 **Aucun prestataire tiers ne voit passer les messages de vos clients**, contrairement à un service
 de formulaire hébergé.
 
-### Les trois valeurs à renseigner
+Le Worker est déployé sur `https://oups-contact.yann-99a.workers.dev` et fonctionne.
+
+### ⚠️ N'essayez jamais d'envoyer depuis @oups.it
+
+C'est le piège de ce projet, et il coûterait cher.
+
+`oups.it` a sa messagerie chez **Infomaniak** : `MX mta-gw.infomaniak.ch` et un SPF strict
+`v=spf1 include:spf.infomaniak.ch -all`. Activer Cloudflare Email Routing sur ce domaine, ce que
+la logique commande pourtant pour « rendre l'expéditeur cohérent », **remplacerait les MX et
+ajouterait un second SPF**. Deux SPF sur un domaine les invalident tous les deux : le courrier
+d'oups.it partirait en spam, quand il ne serait pas simplement perdu.
+
+L'expéditeur est donc `formulaire@npna.ch`, seule zone du compte où Email Routing est déjà actif.
+Personne d'autre que vous ne voit cet expéditeur, et l'en-tête `Reply-To` pointe sur le client :
+« Répondre » écrit bien au bon destinataire.
+
+### Les trois valeurs de configuration
 
 Tout est regroupé dans le bloc `CONFIG` en tête de `js/demande.js` :
 
-| Valeur | Effet tant qu'elle est vide |
+| Valeur | Effet si on la vide |
 |---|---|
-| `workerUrl` | Le formulaire ouvre le logiciel de messagerie du visiteur avec tout de pré-rempli, au lieu d'envoyer |
+| `workerUrl` | Le formulaire ouvre le logiciel de messagerie du visiteur avec tout de pré-rempli |
 | `calendlyUrl` | Un encadré prend la place du calendrier |
 | `durees` | La ligne « durée habituelle » disparaît de l'estimation |
 
-**Ne remplissez `durees` qu'avec vos chiffres réels.** Ils s'affichent au client avant qu'il ne
-vous contacte : ils vous engagent.
+**`durees` doit ne contenir que vos chiffres réels.** Ils s'affichent au client avant qu'il ne
+vous contacte : ils vous engagent. Ils valent aujourd'hui 1 à 2 heures pour tous les types.
 
-### Déployer le Worker
+### Redéployer le Worker
 
 ```sh
-npx wrangler login                          # une seule fois
-npx wrangler email sending enable oups.it   # autorise l'envoi depuis ce domaine
 cd worker && npx wrangler deploy
 ```
 
-Le déploiement affiche l'adresse du Worker, à recopier dans `workerUrl`.
+### Deux pièges de la bibliothèque mimetext
 
-Vérifiez ensuite que `DESTINATAIRE` et `EXPEDITEUR` dans `worker/wrangler.jsonc` vous conviennent.
-Le domaine de `EXPEDITEUR` doit être celui activé à l'étape précédente.
+Trouvés à l'exécution, à ne pas réintroduire :
+
+- **`Reply-To` n'accepte pas une chaîne.** Il faut une `Mailbox`, sinon l'envoi échoue avec
+  `MIMETEXT_INVALID_HEADER_VALUE`.
+- **mimetext déclare l'encodage mais n'encode pas.** Lui annoncer `base64` en lui passant du texte
+  brut produit du charabia chez le destinataire, et son défaut `7bit` transporte des octets UTF-8,
+  ce qui n'est pas conforme. Les corps sont donc encodés à la main, découpés à 76 caractères.
 
 ### Ce qui protège le formulaire
 
