@@ -71,6 +71,27 @@ de formulaire hébergé.
 
 Le Worker est déployé sur `https://oups-contact.yann-99a.workers.dev` et fonctionne.
 
+### Le parcours en trois étapes
+
+Un assistant par étapes fait perdre du monde à chaque écran, et davantage encore auprès d'un
+public que l'informatique intimide. Trois garde-fous compensent ce risque, à ne pas retirer :
+
+- **la progression est annoncée** (« Étape 2 sur 3 » plus une barre), pour qu'on sache où l'on en est ;
+- **le récapitulatif** rappelle les réponses déjà données et permet d'y revenir d'un clic ;
+- **un bouton Retour** existe à chaque étape après la première, et les réponses sont conservées.
+
+Le focus passe sur le titre de l'étape à chaque changement, pour que les lecteurs d'écran
+annoncent la nouvelle question.
+
+### Trois pièges CSS rencontrés ici
+
+- **`[hidden]` ne cache rien** si l'élément a un `display` déclaré par l'auteur : `grid` et `flex`
+  l'emportent sur le `display:none` du navigateur. D'où la règle `[hidden] { display: none !important }`.
+- **La légende d'un `fieldset` en grille ne participe pas à la grille**, donc `gap` ne s'y applique
+  pas. Son écart doit être posé à la main, sinon l'anneau de focus des cartes vient mordre dessus.
+- **`section { padding }` attrapait les `<section>` des étapes**, leur ajoutant 80 px de vide en
+  haut et en bas. La règle vise désormais `main > section`.
+
 ### ⚠️ N'essayez jamais d'envoyer depuis @oups.it
 
 C'est le piège de ce projet, et il coûterait cher.

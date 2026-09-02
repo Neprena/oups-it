@@ -79,10 +79,11 @@ document.addEventListener('DOMContentLoaded', () => {
     for (const c of cartes) c.classList.toggle('est-choisi', c.querySelector('input').checked);
   };
   for (const c of cartes) {
-    const radio = c.querySelector('input');
-    radio.addEventListener('change', () => { majCartes(); majEstimation(); valider('souci', false); });
-    radio.addEventListener('focus', () => c.classList.add('a-le-focus'));
-    radio.addEventListener('blur', () => c.classList.remove('a-le-focus'));
+    // l'anneau de focus est laissé au CSS via :focus-visible, pour qu'il
+    // n'apparaisse qu'au clavier et jamais au clic de souris
+    c.querySelector('input').addEventListener('change', () => {
+      majCartes(); majEstimation(); valider('souci', false);
+    });
   }
 
   const souciChoisi = () => form.querySelector('input[name="souci"]:checked')?.value || '';
@@ -139,6 +140,67 @@ document.addEventListener('DOMContentLoaded', () => {
 
   champs.commune.addEventListener('input', majEstimation);
 
+  /* ---------- navigation entre les étapes ----------
+     Trois étapes, et rien n'est vraiment caché : la progression est annoncée,
+     le récapitulatif rappelle les réponses déjà données et permet d'y revenir
+     d'un clic, et un bouton Retour existe partout après la première étape. */
+  const ETAPES = 3;
+  let etape = 1;
+  const jauge = document.getElementById('jauge');
+  const progression = document.getElementById('progression');
+  const recap = document.getElementById('recap');
+
+  function majRecap() {
+    const lignes = [];
+    if (etape > 1 && souciChoisi()) lignes.push(['Votre souci', SOUCIS_COURT[souciChoisi()], 1]);
+    if (etape > 2) lignes.push(['Votre commune', champs.commune.value.trim() || 'non précisée', 2]);
+    recap.innerHTML = lignes.map(([t, v, e]) =>
+      '<li><span>' + t + '</span> <span class="recap-valeur">' + v + '</span>' +
+      '<button type="button" data-vers="' + e + '">Modifier</button></li>').join('');
+    recap.hidden = lignes.length === 0;
+  }
+
+  function afficherEtape(n, focaliser = true) {
+    etape = n;
+    for (let i = 1; i <= ETAPES; i++) {
+      document.getElementById('etape-' + i).hidden = i !== n;
+    }
+    jauge.style.width = Math.round((n / ETAPES) * 100) + '%';
+    progression.textContent = 'Étape ' + n + ' sur ' + ETAPES;
+    majRecap();
+    if (focaliser) {
+      const titre = document.getElementById('titre-' + n);
+      titre.focus({ preventScroll: true });
+      document.getElementById('contact').scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }
+  }
+
+  // chaque étape ne laisse passer que si ce qu'elle demande est renseigné
+  const conditions = { 1: ['souci'], 2: [], 3: ['nom', 'email', 'message'] };
+
+  form.addEventListener('click', (e) => {
+    const bouton = e.target.closest('[data-vers]');
+    if (!bouton) return;
+    const cible = Number(bouton.dataset.vers);
+    if (cible > etape) {
+      dejaSoumis = true;
+      const ok = conditions[etape].map((c) => valider(c)).every(Boolean);
+      if (!ok) {
+        const premier = form.querySelector('#etape-' + etape + ' [aria-invalid="true"]')
+                     || document.getElementById('choix-souci');
+        premier.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        (premier.querySelector('input') || premier).focus({ preventScroll: true });
+        return;
+      }
+    }
+    afficherEtape(cible);
+  });
+
+  recap.addEventListener('click', (e) => {
+    const bouton = e.target.closest('[data-vers]');
+    if (bouton) afficherEtape(Number(bouton.dataset.vers));
+  });
+
   /* ---------- validation, en français clair ---------- */
   const messages = {
     souci:   'Dites-moi d’abord ce qui ne va pas, en choisissant une des quatre cases.',
@@ -189,12 +251,15 @@ document.addEventListener('DOMContentLoaded', () => {
     dejaSoumis = true;
     afficherErreur('envoi', '');
 
-    const cles = ['souci', 'nom', 'email', 'message'];
-    const ok = cles.map((c) => valider(c)).every(Boolean);
+    // le souci a déjà été validé à l'étape 1, mais on revérifie : quelqu'un
+    // a pu revenir en arrière et décocher
+    if (!valider('souci', false)) { afficherEtape(1); valider('souci'); return; }
+
+    const ok = ['nom', 'email', 'message'].map((c) => valider(c)).every(Boolean);
     if (!ok) {
-      const premier = form.querySelector('[aria-invalid="true"]') || form.querySelector('#choix-souci');
+      const premier = form.querySelector('#etape-3 [aria-invalid="true"]');
       premier.scrollIntoView({ block: 'center', behavior: 'smooth' });
-      (premier.querySelector('input') || premier).focus({ preventScroll: true });
+      premier.focus({ preventScroll: true });
       return;
     }
 
@@ -293,4 +358,5 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   majCartes();
+  afficherEtape(1, false);
 });

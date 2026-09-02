@@ -36,6 +36,11 @@
    -------------------------------------------------------------------------- */
 * { box-sizing: border-box; }
 
+/* L'attribut hidden agit via display:none dans la feuille du navigateur, et
+   toute déclaration display de l'auteur l'emporte sur elle. Sans cette règle,
+   un élément en grid ou en flex reste visible malgré hidden. */
+[hidden] { display: none !important; }
+
 body {
   margin: 0;
   background: var(--cream);
@@ -165,7 +170,9 @@ img { max-width: 100%; }
 /* --------------------------------------------------------------------------
    5. Sections
    -------------------------------------------------------------------------- */
-section { padding: clamp(3rem, 7vw, 5rem) 0; }
+/* uniquement les sections de premier niveau : sinon les <section> des étapes
+   du formulaire héritent de 80 px de rembourrage haut et bas */
+main > section { padding: clamp(3rem, 7vw, 5rem) 0; }
 .band { background: var(--paper); border-block: 1px solid var(--line); }
 
 .sec-head { margin-bottom: 2.5rem; }
@@ -538,6 +545,9 @@ dialog::backdrop { background: rgba(46, 32, 23, .5); }
 .champ .aide { font-size: 1rem; color: var(--ink-soft); }
 
 .demande fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: .65rem; }
+/* la légende d'un fieldset ne participe pas à la grille : son écart doit être
+   posé à la main, sinon l'anneau de focus des cartes vient mordre dessus */
+.demande legend { margin-bottom: .65rem; }
 
 input[type="text"],
 input[type="email"],
@@ -594,8 +604,11 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--
   cursor: pointer;
 }
 .choix-carte.est-choisi { border-color: var(--teal-deep); background: var(--teal-tint); }
-.choix-carte:has(input:focus-visible),
-.choix-carte.a-le-focus { outline: 3px solid var(--teal-deep); outline-offset: 3px; }
+.choix-carte:has(input:focus-visible) {
+  /* uniquement au clavier : au clic de souris l'anneau n'a pas lieu d'être */
+  outline: 3px solid var(--teal-deep);
+  outline-offset: 3px;
+}
 
 /* estimation, mise à jour au fil des réponses */
 .estim {
@@ -673,3 +686,81 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--
 .erreur--envoi { margin-top: 1rem; }
 
 .insecable { white-space: nowrap; }
+
+/* --------------------------------------------------------------------------
+   18. Parcours en étapes
+   Trois étapes seulement, et rien n'est vraiment caché : la progression est
+   annoncée, le récapitulatif rappelle les réponses déjà données et permet d'y
+   revenir, et un bouton Retour est présent à chaque étape après la première.
+   -------------------------------------------------------------------------- */
+.lecteur-seul {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.progression { display: grid; gap: .6rem; }
+.progression-barre {
+  height: 8px;
+  background: var(--sand);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progression-barre span {
+  display: block;
+  height: 100%;
+  width: 33.33%;
+  background: var(--teal-deep);
+  border-radius: 999px;
+  transition: width .3s ease;
+}
+.progression-texte {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.recap { display: grid; gap: .5rem; margin: 0; padding: 0; list-style: none; }
+.recap li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: .3rem .75rem;
+  font-size: 1.0625rem;
+  color: var(--ink-soft);
+}
+.recap .recap-valeur { color: var(--ink); font-weight: 700; }
+.recap button {
+  font: inherit;
+  font-size: 1rem;
+  min-height: 44px;
+  padding: 0 .2rem;
+  color: var(--teal-deep);
+  background: none;
+  border: none;
+  text-decoration: underline;
+  text-underline-offset: .18em;
+  cursor: pointer;
+}
+
+.etape { display: grid; gap: 1.75rem; }
+.etape-titre {
+  font-size: clamp(1.4rem, 3.5vw, 1.75rem);
+  line-height: 1.25;
+}
+.etape-titre:focus-visible { outline: 3px solid var(--teal-deep); outline-offset: 6px; }
+
+.etape-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+.etape-actions .btn--ghost { order: -1; }
+@media (max-width: 520px) {
+  .etape-actions { flex-direction: column-reverse; align-items: stretch; }
+  .etape-actions .btn { width: 100%; }
+}

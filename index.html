@@ -365,94 +365,121 @@
           </noscript>
 
           <form id="demande" class="demande" novalidate>
-            <fieldset>
-              <legend>1. Qu'est-ce qui ne va pas&nbsp;?</legend>
-              <div class="choix" id="choix-souci">
-                <label class="choix-carte">
-                  <input type="radio" name="souci" value="ordinateur">
-                  <svg aria-hidden="true"><use href="#i-ecran"/></svg>
-                  <span>Mon ordinateur</span>
-                </label>
-                <label class="choix-carte">
-                  <input type="radio" name="souci" value="internet">
-                  <svg aria-hidden="true"><use href="#i-wifi"/></svg>
-                  <span>Internet ou le <span class="insecable">Wi-Fi</span></span>
-                </label>
-                <label class="choix-carte">
-                  <input type="radio" name="souci" value="imprimante">
-                  <svg aria-hidden="true"><use href="#i-imprimante"/></svg>
-                  <span>Mon imprimante</span>
-                </label>
-                <label class="choix-carte">
-                  <input type="radio" name="souci" value="autre">
-                  <svg aria-hidden="true"><use href="#i-question"/></svg>
-                  <span>Autre chose</span>
-                </label>
+            <div class="progression">
+              <div class="progression-barre" aria-hidden="true"><span id="jauge"></span></div>
+              <p class="progression-texte" id="progression" role="status">Étape 1 sur 3</p>
+            </div>
+
+            <ul class="recap" id="recap" hidden></ul>
+
+            <!-- ÉTAPE 1 -->
+            <section class="etape" id="etape-1" aria-labelledby="titre-1">
+              <h3 class="etape-titre" id="titre-1" tabindex="-1">Qu'est-ce qui ne va pas&nbsp;?</h3>
+              <fieldset>
+                <legend class="lecteur-seul">Nature du souci</legend>
+                <div class="choix" id="choix-souci">
+                  <label class="choix-carte">
+                    <input type="radio" name="souci" value="ordinateur">
+                    <svg aria-hidden="true"><use href="#i-ecran"/></svg>
+                    <span>Mon ordinateur</span>
+                  </label>
+                  <label class="choix-carte">
+                    <input type="radio" name="souci" value="internet">
+                    <svg aria-hidden="true"><use href="#i-wifi"/></svg>
+                    <span>Internet ou le <span class="insecable">Wi-Fi</span></span>
+                  </label>
+                  <label class="choix-carte">
+                    <input type="radio" name="souci" value="imprimante">
+                    <svg aria-hidden="true"><use href="#i-imprimante"/></svg>
+                    <span>Mon imprimante</span>
+                  </label>
+                  <label class="choix-carte">
+                    <input type="radio" name="souci" value="autre">
+                    <svg aria-hidden="true"><use href="#i-question"/></svg>
+                    <span>Autre chose</span>
+                  </label>
+                </div>
+                <p class="erreur" id="err-souci" hidden></p>
+              </fieldset>
+              <div class="etape-actions">
+                <button type="button" class="btn btn--big" data-vers="2">Continuer</button>
               </div>
-              <p class="erreur" id="err-souci" hidden></p>
-            </fieldset>
+            </section>
 
-            <div class="champ">
-              <label for="commune">2. Dans quelle commune êtes-vous&nbsp;?</label>
-              <input type="text" id="commune" name="commune" list="liste-communes" autocomplete="address-level2" enterkeyhint="next">
-              <datalist id="liste-communes">
-                <option value="Avenches"></option>
-                <option value="Faoug"></option>
-                <option value="Cudrefin"></option>
-                <option value="Vully-les-Lacs"></option>
-                <option value="Mont-Vully"></option>
-                <option value="Morat"></option>
-                <option value="Villarepos"></option>
-                <option value="Domdidier"></option>
-                <option value="Dompierre"></option>
-                <option value="Corcelles-près-Payerne"></option>
-                <option value="Payerne"></option>
-                <option value="Missy"></option>
-                <option value="Grandcour"></option>
-              </datalist>
-              <p class="aide" id="aide-commune">Commencez à taper, la liste vous propose les communes où je me déplace.</p>
-            </div>
+            <!-- ÉTAPE 2 -->
+            <section class="etape" id="etape-2" hidden aria-labelledby="titre-2">
+              <h3 class="etape-titre" id="titre-2" tabindex="-1">Dans quelle commune êtes-vous&nbsp;?</h3>
+              <div class="champ">
+                <label for="commune" class="lecteur-seul">Commune</label>
+                <input type="text" id="commune" name="commune" list="liste-communes" autocomplete="address-level2" enterkeyhint="next">
+                <datalist id="liste-communes">
+                  <option value="Avenches"></option>
+                  <option value="Faoug"></option>
+                  <option value="Cudrefin"></option>
+                  <option value="Vully-les-Lacs"></option>
+                  <option value="Mont-Vully"></option>
+                  <option value="Morat"></option>
+                  <option value="Villarepos"></option>
+                  <option value="Domdidier"></option>
+                  <option value="Dompierre"></option>
+                  <option value="Corcelles-près-Payerne"></option>
+                  <option value="Payerne"></option>
+                  <option value="Missy"></option>
+                  <option value="Grandcour"></option>
+                </datalist>
+                <p class="aide" id="aide-commune">Commencez à taper, la liste vous propose les communes où je me déplace.</p>
+              </div>
+              <output class="estim" id="estimation" for="choix-souci commune" hidden></output>
+              <div class="etape-actions">
+                <button type="button" class="btn btn--ghost" data-vers="1">Retour</button>
+                <button type="button" class="btn btn--big" data-vers="3">Continuer</button>
+              </div>
+            </section>
 
-            <output class="estim" id="estimation" for="choix-souci commune" hidden></output>
+            <!-- ÉTAPE 3 -->
+            <section class="etape" id="etape-3" hidden aria-labelledby="titre-3">
+              <h3 class="etape-titre" id="titre-3" tabindex="-1">Comment puis-je vous joindre&nbsp;?</h3>
 
-            <div class="champ">
-              <label for="nom">3. Votre nom</label>
-              <input type="text" id="nom" name="nom" autocomplete="name" enterkeyhint="next">
-              <p class="erreur" id="err-nom" hidden></p>
-            </div>
+              <div class="champ">
+                <label for="nom">Votre nom</label>
+                <input type="text" id="nom" name="nom" autocomplete="name" enterkeyhint="next">
+                <p class="erreur" id="err-nom" hidden></p>
+              </div>
 
-            <div class="champ">
-              <label for="email">Votre adresse email</label>
-              <input type="email" id="email" name="email" autocomplete="email" inputmode="email" enterkeyhint="next">
-              <p class="aide">C'est là que je vous répondrai.</p>
-              <p class="erreur" id="err-email" hidden></p>
-            </div>
+              <div class="champ">
+                <label for="email">Votre adresse email</label>
+                <input type="email" id="email" name="email" autocomplete="email" inputmode="email" enterkeyhint="next">
+                <p class="aide">C'est là que je vous répondrai.</p>
+                <p class="erreur" id="err-email" hidden></p>
+              </div>
 
-            <div class="champ">
-              <label for="tel">Votre téléphone <span class="fac">(facultatif)</span></label>
-              <input type="tel" id="tel" name="tel" autocomplete="tel" inputmode="tel" enterkeyhint="next">
-              <p class="aide">Si vous le laissez, je peux vous rappeler plutôt qu'écrire. C'est souvent plus rapide.</p>
-            </div>
+              <div class="champ">
+                <label for="tel">Votre téléphone <span class="fac">(facultatif)</span></label>
+                <input type="tel" id="tel" name="tel" autocomplete="tel" inputmode="tel" enterkeyhint="next">
+                <p class="aide">Si vous le laissez, je peux vous rappeler plutôt qu'écrire. C'est souvent plus rapide.</p>
+              </div>
 
-            <div class="champ">
-              <label for="message">4. Racontez-moi le problème</label>
-              <textarea id="message" name="message" enterkeyhint="done"></textarea>
-              <p class="aide">Pas besoin de termes techniques. Décrivez simplement ce que vous voyez et depuis quand.</p>
-              <p class="erreur" id="err-message" hidden></p>
-            </div>
+              <div class="champ">
+                <label for="message">Racontez-moi le problème</label>
+                <textarea id="message" name="message" enterkeyhint="done"></textarea>
+                <p class="aide">Pas besoin de termes techniques. Décrivez simplement ce que vous voyez et depuis quand.</p>
+                <p class="erreur" id="err-message" hidden></p>
+              </div>
 
-            <div class="pot-de-miel" aria-hidden="true">
-              <label>Laissez ce champ vide<input type="text" name="site" tabindex="-1" autocomplete="off"></label>
-            </div>
+              <div class="pot-de-miel" aria-hidden="true">
+                <label>Laissez ce champ vide<input type="text" name="site" tabindex="-1" autocomplete="off"></label>
+              </div>
 
-            <div>
-              <button class="btn btn--big" type="submit" id="envoyer">
-                <svg aria-hidden="true"><use href="#i-mail"/></svg> Envoyer ma demande
-              </button>
+              <div class="etape-actions">
+                <button type="button" class="btn btn--ghost" data-vers="2">Retour</button>
+                <button class="btn btn--big" type="submit" id="envoyer">
+                  <svg aria-hidden="true"><use href="#i-mail"/></svg> Envoyer ma demande
+                </button>
+              </div>
               <p class="erreur erreur--envoi" id="err-envoi" hidden></p>
-            </div>
 
-            <p class="form-note">Votre message m'est transmis directement par email. Il n'est ni revendu, ni utilisé à d'autres fins que de vous répondre. Aucun cookie n'est déposé à cette étape.</p>
+              <p class="form-note">Votre message m'est transmis directement par email. Il n'est ni revendu, ni utilisé à d'autres fins que de vous répondre.</p>
+            </section>
           </form>
 
           <div id="apres-envoi" hidden>
