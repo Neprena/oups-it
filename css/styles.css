@@ -637,7 +637,10 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--
   color: var(--ink-soft);
   font-size: 1.0625rem;
 }
-.calendly-inline-widget { min-height: 680px; border-radius: var(--radius); overflow: hidden; }
+/* Calendly redimensionne son iframe tout seul : pas d'overflow hidden ici,
+   il couperait le sélecteur d'horaires qui apparaît sous le calendrier. */
+.calendly-inline-widget { min-height: 1040px; }
+@media (max-width: 700px) { .calendly-inline-widget { min-height: 1160px; } }
 
 /* contact direct, volontairement discret */
 .contact-direct {
