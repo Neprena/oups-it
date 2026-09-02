@@ -4,7 +4,14 @@
  * Le site est statique, servi par GitHub Pages : il n'a aucun serveur pour
  * recevoir un formulaire. Ce Worker joue ce rôle et transmet la demande par
  * email. Aucun prestataire tiers ne voit passer les messages des clients.
+ *
+ * L'envoi passe par Email Routing, gratuit sur l'offre Free, et non par le
+ * produit Email Sending, qui n'est pas ouvert à ce compte. Conséquence : la
+ * destination doit être une adresse vérifiée dans Cloudflare, ce qui n'est pas
+ * une gêne ici puisque nous n'écrivons qu'à Yann.
  */
+import { EmailMessage } from 'cloudflare:email';
+import { createMimeMessage, Mailbox } from 'mimetext';
 
 const CHAMPS_MAX = { nom: 120, email: 200, tel: 40, commune: 120, message: 5000, estimation: 1000 };
 const SOUCIS = {
@@ -19,6 +26,20 @@ const echapper = (t) => String(t ?? '')
   .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
 const emailValide = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+
+/**
+ * mimetext déclare l'encodage mais n'encode pas lui-même : si on lui annonce
+ * base64 en lui donnant du texte brut, le client affiche du charabia. On
+ * encode donc à la main, en découpant à 76 caractères comme l'exige la RFC.
+ * Sans cela, le corps part en 7bit avec des octets UTF-8 dedans, ce qui est
+ * non conforme et se fait mutiler par certains serveurs.
+ */
+function enBase64(texte) {
+  const octets = new TextEncoder().encode(texte);
+  let binaire = '';
+  for (const o of octets) binaire += String.fromCharCode(o);
+  return btoa(binaire).replace(/(.{76})/g, '$1\r\n');
+}
 
 function origineAutorisee(request, env) {
   const origine = request.headers.get('Origin');
@@ -134,16 +155,21 @@ export default {
           echapper(champs.estimation) + '</p>'
         : '');
 
+    const objet = 'Demande de dépannage : ' + SOUCIS[champs.souci] +
+                  (champs.commune ? ' à ' + champs.commune : '') + ' (' + champs.nom + ')';
+
     try {
-      await env.EMAIL.send({
-        to: env.DESTINATAIRE,
-        from: { email: env.EXPEDITEUR, name: 'Formulaire OUPS' },
-        replyTo: champs.email,          // répondre au client d'un simple « Répondre »
-        subject: 'Demande de dépannage : ' + SOUCIS[champs.souci] +
-                 (champs.commune ? ' à ' + champs.commune : '') + ' (' + champs.nom + ')',
-        text: texte,
-        html
-      });
+      const msg = createMimeMessage();
+      msg.setSender({ name: 'Formulaire OUPS', addr: env.EXPEDITEUR });
+      msg.setRecipient(env.DESTINATAIRE);
+      // « Répondre » dans le logiciel de messagerie écrit directement au client
+      // Reply-To exige une Mailbox, une chaîne est refusée par mimetext
+      msg.setHeader('Reply-To', new Mailbox({ addr: champs.email, name: champs.nom }, { type: 'From' }));
+      msg.setSubject(objet);
+      msg.addMessage({ contentType: 'text/plain', encoding: 'base64', data: enBase64(texte) });
+      msg.addMessage({ contentType: 'text/html', encoding: 'base64', data: enBase64(html) });
+
+      await env.EMAIL.send(new EmailMessage(env.EXPEDITEUR, env.DESTINATAIRE, msg.asRaw()));
     } catch (e) {
       console.error('envoi impossible', e);
       return reponse(502, { erreur: 'Le message n’a pas pu être transmis.' }, origine);

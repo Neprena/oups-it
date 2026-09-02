@@ -8,20 +8,20 @@
 const CONFIG = {
   // Adresse du Worker Cloudflare qui reçoit le formulaire et vous l'envoie par
   // email. Tant qu'elle est vide, le bouton d'envoi explique quoi faire.
-  workerUrl: '',
+  workerUrl: 'https://oups-contact.yann-99a.workers.dev',
 
   // Lien Calendly, par exemple 'https://calendly.com/votre-compte/depannage'.
   // Tant qu'il est vide, un encadré prend la place du calendrier.
-  calendlyUrl: '',
+  calendlyUrl: 'https://calendly.com/yann-rapenne/a-distance',
 
   // Fourchettes de durée habituelles, par type de souci.
   // Laissez à null ce que vous ne voulez pas annoncer : la ligne disparaît
   // alors de l'estimation. N'inventez rien ici, ces chiffres vous engagent.
   durees: {
-    ordinateur: null,   // par exemple { min: 1, max: 2 }
-    internet:   null,
-    imprimante: null,
-    autre:      null
+    ordinateur: { min: 1, max: 2 },
+    internet:   { min: 1, max: 2 },
+    imprimante: { min: 1, max: 2 },
+    autre:      { min: 1, max: 2 }
   }
 };
 
@@ -275,6 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
       url.searchParams.set('a1', [SOUCIS_COURT[d.souci], d.commune].filter(Boolean).join(', '));
       url.searchParams.set('hide_gdpr_banner', '1');
       rdv.innerHTML = '<h3>Choisissez un créneau</h3>' +
+        '<p class="form-note">Il s’agit d’un premier échange à distance. Si un déplacement chez vous s’avère nécessaire, nous conviendrons ensemble d’un second rendez-vous.</p>' +
         '<div class="calendly-inline-widget" data-url="' + url.toString() + '"></div>';
       // le script Calendly n'est chargé qu'ici : aucun cookie tiers avant cet instant
       const s = document.createElement('script');

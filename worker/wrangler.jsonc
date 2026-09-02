@@ -1,25 +1,43 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "oups-contact",
   "main": "src/index.js",
   "compatibility_date": "2026-09-02",
+  "compatibility_flags": ["nodejs_compat"],
 
-  // Envoi d'email sans clé d'API : le Worker parle directement au service.
-  // Prérequis, une seule fois : npx wrangler email sending enable oups.it
-  "send_email": [{ "name": "EMAIL" }],
-
-  // Limiteur de débit, 5 envois par minute et par adresse IP.
-  // Si wrangler refuse ce bloc, supprimez-le : le Worker fonctionne sans,
-  // le code teste la présence du limiteur avant de l'utiliser.
-  "ratelimit": [
-    { "name": "LIMITEUR", "namespace_id": "1001", "simple": { "limit": 5, "period": 60 } }
+  // Envoi via Email Routing, gratuit sur l'offre Free.
+  //
+  // L'expéditeur est sur npna.ch, seule zone du compte où Email Routing est
+  // déjà actif. oups.it ne convient PAS : sa messagerie est chez Infomaniak,
+  // activer Email Routing y remplacerait les MX et ajouterait un second SPF,
+  // ce qui casserait le courrier du domaine.
+  //
+  // Personne d'autre que Yann ne voit cet expéditeur, et l'en-tête Reply-To
+  // pointe sur le client, donc « Répondre » écrit bien au bon destinataire.
+  "send_email": [
+    {
+      "name": "EMAIL",
+      "allowed_destination_addresses": ["yann@rapenne.ch"]
+    }
   ],
 
+  // Limiteur de débit, 5 envois par minute et par adresse IP.
+  // Ce binding se déclare sous "unsafe", et non au premier niveau.
+  "unsafe": {
+    "bindings": [
+      {
+        "name": "LIMITEUR",
+        "type": "ratelimit",
+        "namespace_id": "1001",
+        "simple": { "limit": 5, "period": 60 }
+      }
+    ]
+  },
+
   "vars": {
-    // Où arrivent les demandes.
-    "DESTINATAIRE": "contact@oups.it",
-    // Expéditeur technique. Le domaine doit être celui activé ci-dessus.
-    "EXPEDITEUR": "formulaire@oups.it",
+    // Où arrivent les demandes. Doit figurer dans allowed_destination_addresses.
+    "DESTINATAIRE": "yann@rapenne.ch",
+    // Expéditeur technique. Son domaine doit avoir Email Routing activé.
+    "EXPEDITEUR": "formulaire@npna.ch",
     // Seules ces origines peuvent poster sur le Worker.
     "ORIGINES": "https://neprena.github.io,https://www.oups.it,https://oups.it"
   },
