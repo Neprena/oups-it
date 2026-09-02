@@ -1,4 +1,4 @@
-/* OUPS — trois comportements, rien de plus.
+/* OUPS : trois comportements, rien de plus.
    Tout le reste est natif : le <dialog> gère Échap et le focus, les <details>
    gèrent l'ouverture des questions, et le défilement doux est en CSS. */
 
@@ -23,7 +23,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 3. Mise en évidence du lien de navigation de la section visible
+  // 3. Liaison entre la liste des communes et le plan
+  // Survoler une commune d'un côté allume son jumeau de l'autre. Renfort visuel
+  // uniquement : la même information est déjà lisible dans les deux blocs, donc
+  // rien n'est ajouté au parcours clavier.
+  const zone = document.querySelector('.zone-layout');
+  if (zone) {
+    const cibles = [...zone.querySelectorAll('[data-commune]')];
+    let actif;
+    const allumer = (slug) => {
+      if (slug === actif) return;
+      actif = slug;
+      for (const el of cibles) {
+        el.classList.toggle('is-active', Boolean(slug) && el.dataset.commune === slug);
+      }
+    };
+    // pointerover plutôt que pointerenter : seul le premier remonte jusqu'ici,
+    // ce qui permet de n'installer qu'un écouteur pour les vingt-six éléments.
+    zone.addEventListener('pointerover', (e) => {
+      const el = e.target.closest?.('[data-commune]');
+      allumer(el ? el.dataset.commune : undefined);
+    });
+    zone.addEventListener('pointerleave', () => allumer(undefined));
+  }
+
+  // 4. Mise en évidence du lien de navigation de la section visible
   const liens = [...document.querySelectorAll('.site-nav a[href^="#"]')];
   const sections = liens
     .map((a) => document.getElementById(a.getAttribute('href').slice(1)))

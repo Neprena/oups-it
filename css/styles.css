@@ -1,5 +1,5 @@
 /* ==========================================================================
-   OUPS — feuille de style unique
+   OUPS : feuille de style unique
    Public visé : 50 ans et plus. Trois règles priment sur toute esthétique :
    texte à 20 px minimum, cibles cliquables de 60 px, liens toujours soulignés.
    ========================================================================== */
@@ -301,18 +301,37 @@ main > section { padding: clamp(3rem, 7vw, 5rem) 0; }
 .map-zone  { fill: var(--teal-tint); stroke: var(--teal-deep); stroke-opacity: .3; stroke-width: 2.5; stroke-dasharray: 11 9; }
 .map-lake  { fill: #DCE9EF; stroke: #A7C4D1; stroke-width: 2; }
 .map-canal { fill: none; stroke: #A7C4D1; stroke-width: 5; stroke-linecap: round; }
+.map-road  { fill: none; stroke: var(--line); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
 .map-dot   { fill: var(--ink-soft); }
 .map-home  { fill: var(--teal-deep); }
 .map-ring  { fill: none; stroke: var(--teal-deep); stroke-width: 3; }
+.map-north { fill: var(--ink-soft); }
 .map-rule  { fill: none; stroke: var(--ink-soft); stroke-width: 2.5; stroke-linecap: round; }
 
-.map-t          { font-family: var(--body); font-size: 24px; fill: var(--ink-soft); }
+/* Le liseré crème derrière chaque nom lui permet de croiser une route, une rive
+   ou le tracé de la zone en restant lisible : c'est ce qui rend le placement des
+   étiquettes tenable sur un plan aussi dense. */
+.map-t          { font-family: var(--body); font-size: 24px; fill: var(--ink-soft);
+                  paint-order: stroke; stroke: var(--cream); stroke-width: 5px;
+                  stroke-linejoin: round; }
 .map-t--major   { font-size: 26px; font-weight: 600; fill: var(--ink); }
 .map-t--home    { font-family: var(--display); font-size: 38px; font-weight: 700; fill: var(--ink); }
-.map-t--water   { font-size: 23px; font-style: italic; fill: #6E93A3; }
+.map-t--water   { font-size: 23px; font-style: italic; fill: #6E93A3; stroke: none; }
 .map-t--scale   { font-size: 21px; }
 /* sous 700 px les étiquettes secondaires deviennent illisibles : la liste prend le relais */
 @media (max-width: 700px) { .map-t--minor { display: none; } }
+
+/* Liaison plan <-> liste : survoler une commune d'un côté l'allume de l'autre.
+   Pur renfort visuel, aucune information n'est exclusive à cet état, et aucun
+   arrêt de tabulation n'est ajouté pour ne pas alourdir le parcours clavier. */
+.map-halo { fill: var(--teal-deep); opacity: 0; transition: opacity .18s ease; }
+.map-place.is-active .map-halo { opacity: .18; }
+.map-place.is-active .map-dot  { fill: var(--teal-deep); }
+.map-place.is-active .map-t    { fill: var(--teal-deep); font-weight: 700; }
+.map-place .map-dot, .map-place .map-t { transition: fill .18s ease; }
+@media (prefers-reduced-motion: reduce) {
+  .map-halo, .map-place .map-dot, .map-place .map-t { transition: none; }
+}
 
 .zone-list-title { font-size: 1.2rem; margin-bottom: 1.1rem; }
 .zone-more { margin-top: 1.5rem; color: var(--ink-soft); font-size: 1.0625rem; }
@@ -326,6 +345,9 @@ main > section { padding: clamp(3rem, 7vw, 5rem) 0; }
 }
 .band .communes li { background: var(--cream); }
 .communes li.is-home { background: var(--teal-tint); font-weight: 700; color: var(--teal-deep); }
+.communes li[data-commune] { transition: background-color .18s ease, color .18s ease; }
+.communes li.is-active { background: var(--teal-tint); color: var(--teal-deep); font-weight: 700; }
+@media (prefers-reduced-motion: reduce) { .communes li[data-commune] { transition: none; } }
 
 /* --------------------------------------------------------------------------
    10. Qui suis-je

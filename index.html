@@ -31,7 +31,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@36,700,50&family=Nunito+Sans:wght@400..700&display=swap">
-    <link rel="stylesheet" href="css/styles.css?v=9605ba26">
+    <link rel="stylesheet" href="css/styles.css?v=ce05112f">
   </head>
 
   <body>
@@ -212,80 +212,175 @@
         <div class="wrap">
           <div class="sec-head">
             <h2>Je me déplace autour d'Avenches</h2>
-            <p class="lede">Entre le lac de Morat et le lac de Neuchâtel, dans un rayon d'une vingtaine de kilomètres.</p>
+            <p class="lede">Entre le lac de Morat et le lac de Neuchâtel, dans un rayon d'une dizaine de kilomètres.</p>
           </div>
 
           <div class="zone-layout">
             <figure class="map">
-              <svg viewBox="60 70 600 630" role="img" aria-labelledby="mapTitre mapDesc">
+              <!-- Plan reprojeté depuis les coordonnées WGS84 réelles, échelle unique :
+                     x = 340 + (lon - 7.0428) * 2282
+                     y = 355 - (lat - 46.8809) * 3336
+                   soit 30 unités = 1 km (barre d'échelle : 5 km = 150 unités).
+                   Toute commune ajoutée doit être placée avec cette formule, sans quoi
+                   la barre d'échelle et le contour de la zone deviennent des mensonges. -->
+              <svg viewBox="0 0 660 650" role="img" aria-labelledby="mapTitre mapDesc">
                 <title id="mapTitre">Plan de la zone d'intervention autour d'Avenches</title>
-                <desc id="mapDesc">Plan schématique situant Avenches entre le lac de Morat, à l'est, et le lac de Neuchâtel, au nord-ouest. La zone desservie s'étend de Payerne au sud-ouest jusqu'à Morat au nord-est. Les communes sont énumérées dans la liste qui suit ce plan.</desc>
+                <desc id="mapDesc">Plan schématique de la région d'Avenches. Le lac de Neuchâtel occupe le nord-ouest, le lac de Morat le nord-est, reliés par le canal de la Broye. Avenches est au centre. La zone desservie, tracée en tirets, s'étend de Grandcour et Payerne à l'ouest et au sud-ouest jusqu'à Morat et Villarepos à l'est, et remonte au nord jusqu'à Cudrefin et Mont-Vully. Les treize communes sont énumérées dans la liste qui suit ce plan.</desc>
 
-                <ellipse class="map-zone" cx="358" cy="386" rx="300" ry="318"/>
+                <!-- Zone desservie. Dessinée en premier : les lacs passent par-dessus,
+                     ce qui donne l'impression juste d'une zone arrêtée par l'eau. -->
+                <path class="map-zone" d="M451 51
+                  C495 71 538 114 553 176
+                  C568 238 582 366 543 424
+                  C504 482 396 496 317 523
+                  C239 551 119 598 72 589
+                  C25 580 43 498 35 468
+                  C27 438 5 450 22 409
+                  C39 368 94 278 139 220
+                  C184 162 240 87 292 59
+                  C344 31 408 32 451 51 Z"/>
 
-                <polygon class="map-lake" points="-50,-50 320,-50 353,158 176,256 70,349 -50,430"/>
-                <ellipse class="map-lake" cx="518" cy="238" rx="122" ry="42" transform="rotate(-45 518 238)"/>
-                <path class="map-canal" d="M345 122 C 420 118, 495 148, 555 180"/>
+                <!-- Lac de Neuchâtel : seule la rive sud-est est dans le cadre,
+                     le reste du lac déborde et se fait rogner par le viewBox. -->
+                <path class="map-lake" d="M-40 362
+                  C14 332 48 306 76 271
+                  C100 242 108 240 134 236
+                  C160 232 165 225 174 208
+                  C188 178 199 162 220 141
+                  C238 122 245 100 257 82
+                  C272 60 267 54 278 39
+                  C288 25 291 18 299 8
+                  L299 -40 L-40 -40 Z"/>
 
-                <text class="map-t map-t--water" x="170" y="170" text-anchor="middle" transform="rotate(-38 170 170)">Lac de Neuchâtel</text>
-                <text class="map-t map-t--water" x="518" y="241" text-anchor="middle" transform="rotate(-45 518 241)">Lac de Morat</text>
+                <!-- Lac de Morat -->
+                <path class="map-lake" d="M361 265
+                  C355 256 375 226 382 205
+                  C389 184 397 155 405 140
+                  C413 125 416 119 428 116
+                  C440 113 459 117 478 122
+                  C497 127 532 137 540 145
+                  C548 153 532 162 525 170
+                  C518 178 507 184 496 191
+                  C486 198 475 201 462 212
+                  C449 223 433 249 416 258
+                  C399 267 367 274 361 265 Z"/>
 
-                <circle class="map-dot" cx="452" cy="336" r="7"/>
-                <circle class="map-dot" cx="351" cy="305" r="7"/>
-                <circle class="map-dot" cx="353" cy="158" r="7"/>
-                <circle class="map-dot" cx="490" cy="150" r="7"/>
-                <circle class="map-dot" cx="579" cy="246" r="7"/>
-                <circle class="map-dot" cx="533" cy="398" r="7"/>
-                <circle class="map-dot" cx="315" cy="476" r="7"/>
-                <circle class="map-dot" cx="319" cy="523" r="7"/>
-                <circle class="map-dot" cx="195" cy="571" r="7"/>
-                <circle class="map-dot" cx="159" cy="608" r="7"/>
-                <circle class="map-dot" cx="129" cy="437" r="7"/>
-                <circle class="map-dot" cx="131" cy="400" r="7"/>
+                <!-- Canal de la Broye, de La Sauge à Sugiez puis dans le lac de Morat -->
+                <path class="map-canal" d="M278 39 C334 41 388 46 432 56 C450 61 458 82 456 116"/>
 
-                <circle class="map-ring" cx="409" cy="412" r="18"/>
-                <circle class="map-home" cx="409" cy="412" r="9"/>
+                <text class="map-t map-t--water" x="120" y="176" text-anchor="middle" transform="rotate(-42 120 176)">Lac de Neuchâtel</text>
+                <text class="map-t map-t--water" x="460" y="188" text-anchor="middle" transform="rotate(-28 460 188)">Lac de Morat</text>
 
-                <text class="map-t map-t--home" x="409" y="465" text-anchor="middle">Avenches</text>
-                <text class="map-t map-t--major" x="353" y="133" text-anchor="middle">Cudrefin</text>
-                <text class="map-t map-t--major" x="596" y="284" text-anchor="middle">Morat</text>
-                <text class="map-t map-t--major" x="172" y="614">Payerne</text>
-                <text class="map-t map-t--minor" x="466" y="343">Faoug</text>
-                <text class="map-t map-t--minor" x="338" y="312" text-anchor="end">Vully-les-Lacs</text>
-                <text class="map-t map-t--minor" x="503" y="156">Mont-Vully</text>
-                <text class="map-t map-t--minor" x="533" y="378" text-anchor="middle">Villarepos</text>
-                <text class="map-t map-t--minor" x="302" y="482" text-anchor="end">Domdidier</text>
-                <text class="map-t map-t--minor" x="306" y="529" text-anchor="end">Dompierre</text>
-                <text class="map-t map-t--minor" x="208" y="577">Corcelles-près-Payerne</text>
-                <text class="map-t map-t--minor" x="142" y="443">Missy</text>
-                <text class="map-t map-t--minor" x="144" y="406">Grandcour</text>
+                <!-- Routes principales, sans étiquette : elles servent de structure,
+                     pas d'information. Tracées sous les points et les noms. -->
+                <g class="map-road">
+                  <path d="M101 551 L140 505 L229 491 L243 429 L340 355 L418 271 L510 197"/>
+                  <path d="M340 355 L277 198 L290 107"/>
+                  <path d="M340 355 L499 405"/>
+                  <path d="M63 392 L73 442 L101 551"/>
+                  <path d="M277 198 L402 118"/>
+                </g>
 
-                <path class="map-rule" d="M645 114 L645 90"/>
-                <polygon class="map-home" points="645,80 638,97 652,97"/>
-                <text class="map-t map-t--scale" x="645" y="134" text-anchor="middle">N</text>
+                <g class="map-place is-home" data-commune="avenches">
+                  <circle class="map-halo" cx="340" cy="355" r="30"/>
+                  <circle class="map-ring" cx="340" cy="355" r="20"/>
+                  <circle class="map-home" cx="340" cy="355" r="10"/>
+                  <text class="map-t map-t--home" x="340" y="402" text-anchor="middle">Avenches</text>
+                </g>
 
-                <path class="map-rule" d="M480 662 L480 674 M480 668 L634 668 M634 662 L634 674"/>
-                <text class="map-t map-t--scale" x="557" y="655" text-anchor="middle">5 km</text>
+                <g class="map-place" data-commune="cudrefin">
+                  <circle class="map-halo" cx="290" cy="107" r="17"/>
+                  <circle class="map-dot" cx="290" cy="107" r="7"/>
+                  <text class="map-t map-t--major" x="302" y="140" text-anchor="middle">Cudrefin</text>
+                </g>
+                <g class="map-place" data-commune="morat">
+                  <circle class="map-halo" cx="510" cy="197" r="17"/>
+                  <circle class="map-dot" cx="510" cy="197" r="7"/>
+                  <text class="map-t map-t--major" x="510" y="224" text-anchor="middle">Morat</text>
+                </g>
+                <g class="map-place" data-commune="payerne">
+                  <circle class="map-halo" cx="101" cy="551" r="17"/>
+                  <circle class="map-dot" cx="101" cy="551" r="7"/>
+                  <text class="map-t map-t--major" x="115" y="562">Payerne</text>
+                </g>
+
+                <g class="map-place" data-commune="faoug">
+                  <circle class="map-halo" cx="418" cy="271" r="17"/>
+                  <circle class="map-dot" cx="418" cy="271" r="7"/>
+                  <text class="map-t map-t--minor" x="430" y="286">Faoug</text>
+                </g>
+                <g class="map-place" data-commune="vully-les-lacs">
+                  <circle class="map-halo" cx="277" cy="198" r="17"/>
+                  <circle class="map-dot" cx="277" cy="198" r="7"/>
+                  <text class="map-t map-t--minor" x="277" y="226" text-anchor="middle">Vully-les-Lacs</text>
+                </g>
+                <g class="map-place" data-commune="mont-vully">
+                  <circle class="map-halo" cx="402" cy="118" r="17"/>
+                  <circle class="map-dot" cx="402" cy="118" r="7"/>
+                  <text class="map-t map-t--minor" x="402" y="98" text-anchor="middle">Mont-Vully</text>
+                </g>
+                <g class="map-place" data-commune="villarepos">
+                  <circle class="map-halo" cx="499" cy="405" r="17"/>
+                  <circle class="map-dot" cx="499" cy="405" r="7"/>
+                  <text class="map-t map-t--minor" x="499" y="384" text-anchor="middle">Villarepos</text>
+                </g>
+                <g class="map-place" data-commune="domdidier">
+                  <circle class="map-halo" cx="243" cy="429" r="17"/>
+                  <circle class="map-dot" cx="243" cy="429" r="7"/>
+                  <text class="map-t map-t--minor" x="255" y="436">Domdidier</text>
+                </g>
+                <g class="map-place" data-commune="dompierre">
+                  <circle class="map-halo" cx="229" cy="491" r="17"/>
+                  <circle class="map-dot" cx="229" cy="491" r="7"/>
+                  <text class="map-t map-t--minor" x="241" y="484">Dompierre</text>
+                </g>
+                <!-- « Corcelles-près-Payerne » en entier mesure 279 unités, soit 9 km à
+                     l'échelle du plan : le nom déborderait de la zone. Forme courte ici,
+                     nom complet dans la liste et dans areaServed. -->
+                <g class="map-place" data-commune="corcelles">
+                  <circle class="map-halo" cx="140" cy="505" r="17"/>
+                  <circle class="map-dot" cx="140" cy="505" r="7"/>
+                  <text class="map-t map-t--minor" x="152" y="524">Corcelles</text>
+                </g>
+                <g class="map-place" data-commune="missy">
+                  <circle class="map-halo" cx="73" cy="442" r="17"/>
+                  <circle class="map-dot" cx="73" cy="442" r="7"/>
+                  <text class="map-t map-t--minor" x="85" y="449">Missy</text>
+                </g>
+                <g class="map-place" data-commune="grandcour">
+                  <circle class="map-halo" cx="63" cy="392" r="17"/>
+                  <circle class="map-dot" cx="63" cy="392" r="7"/>
+                  <text class="map-t map-t--minor" x="75" y="399">Grandcour</text>
+                </g>
+
+                <polygon class="map-north" points="610,44 603,62 617,62"/>
+                <path class="map-rule" d="M610 62 L610 84"/>
+                <text class="map-t map-t--scale" x="610" y="108" text-anchor="middle">N</text>
+
+                <path class="map-rule" d="M420 618 L420 630 M420 624 L570 624 M570 618 L570 630"/>
+                <text class="map-t map-t--scale" x="495" y="610" text-anchor="middle">5 km</text>
               </svg>
               <figcaption>Plan sommaire, donné à titre indicatif.</figcaption>
             </figure>
 
             <div>
               <h3 class="zone-list-title">Communes desservies</h3>
+              <!-- data-commune fait le lien avec les groupes .map-place du plan.
+                   Les deux listes doivent rester synchronisées. -->
               <ul class="communes">
-                <li class="is-home">Avenches</li>
-                <li>Faoug</li>
-                <li>Cudrefin</li>
-                <li>Vully-les-Lacs</li>
-                <li>Mont-Vully</li>
-                <li>Morat</li>
-                <li>Villarepos</li>
-                <li>Domdidier</li>
-                <li>Dompierre</li>
-                <li>Corcelles-près-Payerne</li>
-                <li>Payerne</li>
-                <li>Missy</li>
-                <li>Grandcour</li>
+                <li class="is-home" data-commune="avenches">Avenches</li>
+                <li data-commune="faoug">Faoug</li>
+                <li data-commune="cudrefin">Cudrefin</li>
+                <li data-commune="vully-les-lacs">Vully-les-Lacs</li>
+                <li data-commune="mont-vully">Mont-Vully</li>
+                <li data-commune="morat">Morat</li>
+                <li data-commune="villarepos">Villarepos</li>
+                <li data-commune="domdidier">Domdidier</li>
+                <li data-commune="dompierre">Dompierre</li>
+                <li data-commune="corcelles">Corcelles-près-Payerne</li>
+                <li data-commune="payerne">Payerne</li>
+                <li data-commune="missy">Missy</li>
+                <li data-commune="grandcour">Grandcour</li>
               </ul>
               <p class="zone-more">Vous habitez juste en dehors&nbsp;? Appelez quand même, on trouvera une solution.</p>
             </div>
@@ -551,7 +646,7 @@
       </div>
     </dialog>
 
-    <script src="js/scripts.js?v=03278466"></script>
+    <script src="js/scripts.js?v=04aa5802"></script>
     <script src="js/demande.js?v=a433d8bb"></script>
 
     <script type="application/ld+json">
