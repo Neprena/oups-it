@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "oups-contact",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-02",
+
+  // Envoi d'email sans clé d'API : le Worker parle directement au service.
+  // Prérequis, une seule fois : npx wrangler email sending enable oups.it
+  "send_email": [{ "name": "EMAIL" }],
+
+  // Limiteur de débit, 5 envois par minute et par adresse IP.
+  // Si wrangler refuse ce bloc, supprimez-le : le Worker fonctionne sans,
+  // le code teste la présence du limiteur avant de l'utiliser.
+  "ratelimit": [
+    { "name": "LIMITEUR", "namespace_id": "1001", "simple": { "limit": 5, "period": 60 } }
+  ],
+
+  "vars": {
+    // Où arrivent les demandes.
+    "DESTINATAIRE": "contact@oups.it",
+    // Expéditeur technique. Le domaine doit être celui activé ci-dessus.
+    "EXPEDITEUR": "formulaire@oups.it",
+    // Seules ces origines peuvent poster sur le Worker.
+    "ORIGINES": "https://neprena.github.io,https://www.oups.it,https://oups.it"
+  },
+
+  "observability": { "enabled": true }
+}

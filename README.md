@@ -16,6 +16,8 @@ publiés par GitHub Pages depuis la branche `main`.
 | `img/mascotte.*` | Mascotte découpée depuis le SVG, servie en WebP (56 Ko) |
 | `img/lettrage.png` | Lettrage « OUPS, mon ordi ! » découpé depuis le SVG |
 | `img/og-image.png` | Vignette de partage sur les réseaux, 1200 × 630 |
+| `js/demande.js` | Formulaire de demande : choix guidés, estimation en direct, envoi |
+| `worker/` | Worker Cloudflare qui reçoit le formulaire et l'envoie par email |
 
 Les chemins d'actifs sont **relatifs**, donc le site fonctionne aussi bien à la racine
 d'un domaine que sous un sous-dossier.
@@ -54,6 +56,65 @@ Deux pièges qui l'avaient fait exploser :
 5. **Article 4 des conditions générales** : il mentionne le paiement par carte bancaire,
    que la page n'annonce pas. Texte juridique laissé intact, à trancher.
 6. **Le logo imprimé** porte `yann@oups-ordi.ch`, le site affiche `contact@oups.it`.
+7. **Les trois valeurs de `CONFIG`** dans `js/demande.js` : adresse du Worker, lien Calendly,
+   fourchettes de durée. Voir la section « Formulaire de demande ».
+8. **L'article 9 des conditions générales** ne mentionne ni le formulaire, ni Calendly.
+
+## Formulaire de demande
+
+Le site étant statique, il n'a aucun serveur pour recevoir un formulaire. Le dossier `worker/`
+contient un Worker Cloudflare qui joue ce rôle : il reçoit la demande et vous l'envoie par email.
+**Aucun prestataire tiers ne voit passer les messages de vos clients**, contrairement à un service
+de formulaire hébergé.
+
+### Les trois valeurs à renseigner
+
+Tout est regroupé dans le bloc `CONFIG` en tête de `js/demande.js` :
+
+| Valeur | Effet tant qu'elle est vide |
+|---|---|
+| `workerUrl` | Le formulaire ouvre le logiciel de messagerie du visiteur avec tout de pré-rempli, au lieu d'envoyer |
+| `calendlyUrl` | Un encadré prend la place du calendrier |
+| `durees` | La ligne « durée habituelle » disparaît de l'estimation |
+
+**Ne remplissez `durees` qu'avec vos chiffres réels.** Ils s'affichent au client avant qu'il ne
+vous contacte : ils vous engagent.
+
+### Déployer le Worker
+
+```sh
+npx wrangler login                          # une seule fois
+npx wrangler email sending enable oups.it   # autorise l'envoi depuis ce domaine
+cd worker && npx wrangler deploy
+```
+
+Le déploiement affiche l'adresse du Worker, à recopier dans `workerUrl`.
+
+Vérifiez ensuite que `DESTINATAIRE` et `EXPEDITEUR` dans `worker/wrangler.jsonc` vous conviennent.
+Le domaine de `EXPEDITEUR` doit être celui activé à l'étape précédente.
+
+### Ce qui protège le formulaire
+
+- **Contrôle d'origine** : seules les adresses listées dans `ORIGINES` peuvent poster.
+- **Piège à robots** : un champ masqué que seul un robot remplit. S'il est rempli, le Worker
+  répond « succès » sans rien envoyer, pour ne pas renseigner le robot.
+- **Limiteur** : 5 envois par minute et par adresse IP.
+- **Échappement** : le contenu du message est neutralisé avant d'entrer dans l'email.
+
+Si vous modifiez le Worker, rejouez les tests avant de déployer : ils couvrent le contrôle
+d'origine, le piège à robots, la validation et l'échappement HTML.
+
+## Calendly
+
+Le calendrier n'est chargé **qu'après l'envoi du formulaire**, jamais avant : aucun cookie tiers
+n'est déposé chez un visiteur qui se contente de lire la page. Le nom, l'email et la nature du
+souci sont transmis à Calendly en pré-remplissage.
+
+L'offre gratuite de Calendly ne permet qu'**un seul type d'événement**. Distinguer « à distance »
+et « à domicile », qui n'ont ni la même durée ni le même tarif, demande l'offre payante.
+
+Pensez à mentionner Calendly dans l'article 9 de vos conditions générales, puisque des données
+transitent par ce prestataire.
 
 ## Domaine
 

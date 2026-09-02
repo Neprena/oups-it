@@ -21,6 +21,9 @@
   --teal-deep: #045256;  /* boutons, liens, chiffres des tarifs */
   --teal-hi:   #06696E;  /* survol des boutons */
 
+  --alert:     #A63A22;  /* messages d'erreur du formulaire */
+  --alert-bg:  #FBEDE8;
+
   --radius: 12px;
   --tap:    60px;        /* hauteur minimale de toute cible cliquable */
 
@@ -151,7 +154,7 @@ img { max-width: 100%; }
   color: #FFFFFF;
   text-decoration: none;
   cursor: pointer;
-  white-space: nowrap;   /* un libellé d'appel ne doit jamais se couper */
+  text-align: center;
   transition: background-color .15s ease;
 }
 .btn:hover { background: var(--teal-hi); border-color: var(--teal-hi); }
@@ -459,6 +462,12 @@ footer button {
   body { padding-bottom: 92px; }
 }
 
+/* sous 360 px, on rend au texte la place que prenait le rembourrage */
+@media (max-width: 360px) {
+  .btn { padding-inline: 1.1rem; }
+  .btn--big { padding-inline: 1.25rem; }
+}
+
 /* --------------------------------------------------------------------------
    15. Conditions générales
    <dialog> natif : fermeture par Échap et piège de focus fournis par le
@@ -508,3 +517,156 @@ dialog::backdrop { background: rgba(46, 32, 23, .5); }
   *, *::before, *::after { transition: none !important; animation: none !important; }
   html { scroll-behavior: auto; }
 }
+
+/* --------------------------------------------------------------------------
+   17. Formulaire de demande
+   Une seule colonne qui se déroule, jamais un assistant en étapes : tout reste
+   visible, on peut revenir en arrière d'un coup d'œil, rien ne se cache.
+   -------------------------------------------------------------------------- */
+.demande { display: grid; gap: 2.25rem; max-width: 660px; }
+
+.champ { display: grid; gap: .65rem; }
+.champ > label,
+.demande legend {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.1875rem;
+  line-height: 1.35;
+  padding: 0;
+}
+.champ .fac { font-family: var(--body); font-weight: 400; color: var(--ink-soft); }
+.champ .aide { font-size: 1rem; color: var(--ink-soft); }
+
+.demande fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: .65rem; }
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+textarea {
+  width: 100%;
+  min-height: var(--tap);
+  padding: .85rem 1rem;
+  font-family: var(--body);
+  font-size: 1.125rem;   /* 18 px : sous cette taille, iOS zoome tout seul */
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--paper);
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+}
+textarea { min-height: 150px; resize: vertical; }
+input:focus, textarea:focus { border-color: var(--teal-deep); }
+input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--alert); background: var(--alert-bg); }
+
+.erreur {
+  display: flex;
+  gap: .45rem;
+  align-items: flex-start;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--alert);
+}
+.erreur svg { width: 20px; height: 20px; flex: none; margin-top: .15rem; }
+
+/* choix guidés : plus facile qu'une page blanche pour qui ne sait pas nommer sa panne */
+.choix { display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: .85rem; }
+.choix-carte {
+  position: relative;
+  display: grid;
+  gap: .55rem;
+  place-items: center;
+  text-align: center;
+  min-height: 118px;
+  padding: 1.1rem .75rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  background: var(--paper);
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.choix-carte svg { width: 30px; height: 30px; color: var(--teal-deep); }
+.choix-carte input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.choix-carte.est-choisi { border-color: var(--teal-deep); background: var(--teal-tint); }
+.choix-carte:has(input:focus-visible),
+.choix-carte.a-le-focus { outline: 3px solid var(--teal-deep); outline-offset: 3px; }
+
+/* estimation, mise à jour au fil des réponses */
+.estim {
+  display: grid;
+  gap: .75rem;
+  padding: 1.5rem;
+  background: var(--teal-tint);
+  border: 2px solid var(--teal-deep);
+  border-radius: var(--radius);
+}
+.estim h3 { font-size: 1.2rem; }
+.estim dl { display: grid; gap: .5rem; margin: 0; }
+.estim .ligne { display: flex; flex-wrap: wrap; gap: .5rem 1rem; justify-content: space-between; font-size: 1.0625rem; }
+.estim .ligne dt { color: var(--ink-soft); }
+.estim .ligne dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; }
+.estim .mention { font-size: 1rem; color: var(--ink-soft); }
+
+.pot-de-miel { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+.form-note { font-size: 1rem; color: var(--ink-soft); max-width: 58ch; }
+
+/* confirmation d'envoi */
+.confirmation {
+  display: grid;
+  gap: 1.25rem;
+  padding: clamp(1.75rem, 5vw, 2.5rem);
+  background: var(--paper);
+  border: 2px solid var(--teal-deep);
+  border-radius: var(--radius);
+}
+.confirmation h3 { font-size: 1.5rem; }
+.confirmation p { color: var(--ink-soft); max-width: 58ch; }
+
+.rdv { display: grid; gap: 1rem; margin-top: 2rem; }
+.rdv-attente {
+  padding: 1.5rem;
+  border: 2px dashed var(--line);
+  border-radius: var(--radius);
+  color: var(--ink-soft);
+  font-size: 1.0625rem;
+}
+.calendly-inline-widget { min-height: 680px; border-radius: var(--radius); overflow: hidden; }
+
+/* contact direct, volontairement discret */
+.contact-direct {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--line);
+  font-size: 1.0625rem;
+  color: var(--ink-soft);
+  max-width: 58ch;
+}
+.contact-direct a {
+  display: inline-block;
+  font-weight: 700;
+  white-space: nowrap;
+  /* la zone tactile est élargie sans que le lien grossisse visuellement */
+  padding-block: .5rem;
+}
+
+/* repli lorsque JavaScript est désactivé : le formulaire ne peut pas fonctionner */
+.sans-js {
+  max-width: none;
+  padding: 1.25rem;
+  color: var(--alert);
+  background: var(--alert-bg);
+  border: 2px solid var(--alert);
+  border-radius: var(--radius);
+}
+.sans-js a { color: var(--alert); }
+
+.erreur--envoi { margin-top: 1rem; }
+
+.insecable { white-space: nowrap; }

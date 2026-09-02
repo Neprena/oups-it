@@ -62,6 +62,18 @@
       <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="M3 6.5l9 6.2 9-6.2"/>
       </symbol>
+      <symbol id="i-maison" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9.6V20h13V9.6"/><path d="M9.8 20v-5.6h4.4V20"/>
+      </symbol>
+      <symbol id="i-imprimante" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6.5 9V3.5h11V9"/><rect x="2.5" y="9" width="19" height="7.5" rx="2"/><path d="M6.5 13.5h11V21h-11z"/>
+      </symbol>
+      <symbol id="i-question" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"/><path d="M9.4 9.3a2.7 2.7 0 0 1 5.2.9c0 1.8-2.6 2.2-2.6 3.8"/><circle cx="12" cy="17.4" r=".9" fill="currentColor" stroke="none"/>
+      </symbol>
+      <symbol id="i-alerte" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.2"/><circle cx="12" cy="16.6" r="1" fill="currentColor" stroke="none"/>
+      </symbol>
       <symbol id="i-coche" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
         <path d="M4.5 12.5l5 5 10-11"/>
       </symbol>
@@ -93,8 +105,8 @@
             <h1>Un souci d'ordinateur&nbsp;? <em>Je m'en occupe.</em></h1>
             <p class="sub">Écran figé, imprimante qui refuse d'imprimer, Wi-Fi capricieux. Technicien depuis 20 ans à Avenches, j'interviens chez vous ou à distance, et je vous explique tout sans jargon.</p>
             <div class="cta-row">
-              <a class="btn" href="tel:+41768221506"><svg aria-hidden="true"><use href="#i-tel"/></svg> Appelez-moi</a>
-              <a class="btn btn--ghost" href="mailto:contact@oups.it"><svg aria-hidden="true"><use href="#i-mail"/></svg> Écrivez-moi</a>
+              <a class="btn" href="#contact"><svg aria-hidden="true"><use href="#i-mail"/></svg> Demander un dépannage</a>
+              <a class="btn btn--ghost" href="#tarifs">Voir les tarifs</a>
             </div>
             <ul class="reassure">
               <li><svg aria-hidden="true"><use href="#i-coche"/></svg> 20 ans de métier</li>
@@ -339,17 +351,121 @@
 
       <section id="contact">
         <div class="wrap">
-          <div class="contact-box">
-            <h2>Appelez-moi, on en parle</h2>
-            <address>
-              <p><a class="phone-big" href="tel:+41768221506">076&nbsp;822&nbsp;15&nbsp;06</a></p>
-              <p><a class="mail" href="mailto:contact@oups.it">contact@oups.it</a></p>
-              <p class="meta">
-                <span class="who">Yann Rapenne</span>
-                Technicien informatique, région d'Avenches et du Vully
-              </p>
-            </address>
+          <div class="sec-head">
+            <h2>Dites-moi ce qui ne va pas</h2>
+            <p class="lede">Quelques questions pour comprendre votre situation, une estimation de ce que cela coûtera, puis vous choisissez un créneau. Comptez deux minutes.</p>
           </div>
+
+          <noscript>
+            <p class="form-note sans-js">
+              Le formulaire a besoin de JavaScript, qui semble désactivé dans votre navigateur.
+              Écrivez-moi directement à <a href="mailto:contact@oups.it">contact@oups.it</a>
+              ou appelez le <a href="tel:+41768221506">076&nbsp;822&nbsp;15&nbsp;06</a>.
+            </p>
+          </noscript>
+
+          <form id="demande" class="demande" novalidate>
+            <fieldset>
+              <legend>1. Qu'est-ce qui ne va pas&nbsp;?</legend>
+              <div class="choix" id="choix-souci">
+                <label class="choix-carte">
+                  <input type="radio" name="souci" value="ordinateur">
+                  <svg aria-hidden="true"><use href="#i-ecran"/></svg>
+                  <span>Mon ordinateur</span>
+                </label>
+                <label class="choix-carte">
+                  <input type="radio" name="souci" value="internet">
+                  <svg aria-hidden="true"><use href="#i-wifi"/></svg>
+                  <span>Internet ou le <span class="insecable">Wi-Fi</span></span>
+                </label>
+                <label class="choix-carte">
+                  <input type="radio" name="souci" value="imprimante">
+                  <svg aria-hidden="true"><use href="#i-imprimante"/></svg>
+                  <span>Mon imprimante</span>
+                </label>
+                <label class="choix-carte">
+                  <input type="radio" name="souci" value="autre">
+                  <svg aria-hidden="true"><use href="#i-question"/></svg>
+                  <span>Autre chose</span>
+                </label>
+              </div>
+              <p class="erreur" id="err-souci" hidden></p>
+            </fieldset>
+
+            <div class="champ">
+              <label for="commune">2. Dans quelle commune êtes-vous&nbsp;?</label>
+              <input type="text" id="commune" name="commune" list="liste-communes" autocomplete="address-level2" enterkeyhint="next">
+              <datalist id="liste-communes">
+                <option value="Avenches"></option>
+                <option value="Faoug"></option>
+                <option value="Cudrefin"></option>
+                <option value="Vully-les-Lacs"></option>
+                <option value="Mont-Vully"></option>
+                <option value="Morat"></option>
+                <option value="Villarepos"></option>
+                <option value="Domdidier"></option>
+                <option value="Dompierre"></option>
+                <option value="Corcelles-près-Payerne"></option>
+                <option value="Payerne"></option>
+                <option value="Missy"></option>
+                <option value="Grandcour"></option>
+              </datalist>
+              <p class="aide" id="aide-commune">Commencez à taper, la liste vous propose les communes où je me déplace.</p>
+            </div>
+
+            <output class="estim" id="estimation" for="choix-souci commune" hidden></output>
+
+            <div class="champ">
+              <label for="nom">3. Votre nom</label>
+              <input type="text" id="nom" name="nom" autocomplete="name" enterkeyhint="next">
+              <p class="erreur" id="err-nom" hidden></p>
+            </div>
+
+            <div class="champ">
+              <label for="email">Votre adresse email</label>
+              <input type="email" id="email" name="email" autocomplete="email" inputmode="email" enterkeyhint="next">
+              <p class="aide">C'est là que je vous répondrai.</p>
+              <p class="erreur" id="err-email" hidden></p>
+            </div>
+
+            <div class="champ">
+              <label for="tel">Votre téléphone <span class="fac">(facultatif)</span></label>
+              <input type="tel" id="tel" name="tel" autocomplete="tel" inputmode="tel" enterkeyhint="next">
+              <p class="aide">Si vous le laissez, je peux vous rappeler plutôt qu'écrire. C'est souvent plus rapide.</p>
+            </div>
+
+            <div class="champ">
+              <label for="message">4. Racontez-moi le problème</label>
+              <textarea id="message" name="message" enterkeyhint="done"></textarea>
+              <p class="aide">Pas besoin de termes techniques. Décrivez simplement ce que vous voyez et depuis quand.</p>
+              <p class="erreur" id="err-message" hidden></p>
+            </div>
+
+            <div class="pot-de-miel" aria-hidden="true">
+              <label>Laissez ce champ vide<input type="text" name="site" tabindex="-1" autocomplete="off"></label>
+            </div>
+
+            <div>
+              <button class="btn btn--big" type="submit" id="envoyer">
+                <svg aria-hidden="true"><use href="#i-mail"/></svg> Envoyer ma demande
+              </button>
+              <p class="erreur erreur--envoi" id="err-envoi" hidden></p>
+            </div>
+
+            <p class="form-note">Votre message m'est transmis directement par email. Il n'est ni revendu, ni utilisé à d'autres fins que de vous répondre. Aucun cookie n'est déposé à cette étape.</p>
+          </form>
+
+          <div id="apres-envoi" hidden>
+            <div class="confirmation">
+              <h3>C'est envoyé, merci.</h3>
+              <p id="confirmation-texte"></p>
+            </div>
+            <div class="rdv" id="rdv"></div>
+          </div>
+
+          <p class="contact-direct">
+            Vous préférez le téléphone&nbsp;? Je fais cela en parallèle de mon activité principale, je ne suis donc pas toujours joignable, mais vous pouvez essayer au <a href="tel:+41768221506">076&nbsp;822&nbsp;15&nbsp;06</a>. Par email&nbsp;: <a href="mailto:contact@oups.it">contact@oups.it</a>.
+          </p>
         </div>
       </section>
     </main>
@@ -362,8 +478,7 @@
     </footer>
 
     <div class="actionbar">
-      <a class="btn" href="tel:+41768221506"><svg aria-hidden="true"><use href="#i-tel"/></svg> Appeler</a>
-      <a class="btn btn--ghost" href="mailto:contact@oups.it"><svg aria-hidden="true"><use href="#i-mail"/></svg> Écrire</a>
+      <a class="btn" href="#contact"><svg aria-hidden="true"><use href="#i-mail"/></svg> Demander un dépannage</a>
     </div>
 
     <dialog id="cgv" aria-labelledby="cgvTitre">
@@ -410,6 +525,7 @@
     </dialog>
 
     <script src="js/scripts.js"></script>
+    <script src="js/demande.js"></script>
 
     <script type="application/ld+json">
     {
