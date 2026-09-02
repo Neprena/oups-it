@@ -1,0 +1,510 @@
+/* ==========================================================================
+   OUPS — feuille de style unique
+   Public visé : 50 ans et plus. Trois règles priment sur toute esthétique :
+   texte à 20 px minimum, cibles cliquables de 60 px, liens toujours soulignés.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Jetons de conception
+   Couleurs extraites du logo, pour rester cohérent avec la mascotte.
+   -------------------------------------------------------------------------- */
+:root {
+  --ink:       #2E2017;  /* texte principal, ~15:1 sur le fond crème */
+  --ink-soft:  #5E4A3A;  /* texte secondaire */
+  --cream:     #FFF7EE;  /* fond principal */
+  --paper:     #FFFFFF;  /* sections alternées */
+  --sand:      #F5EADB;  /* pastilles et pied de page */
+  --line:      #E3D6C4;  /* filets de 1 px, seule séparation dessinée */
+
+  --teal:      #6BAAAA;  /* écran de la mascotte */
+  --teal-tint: #E4F0EF;  /* fond des pastilles d'icônes */
+  --teal-deep: #045256;  /* boutons, liens, chiffres des tarifs */
+  --teal-hi:   #06696E;  /* survol des boutons */
+
+  --radius: 12px;
+  --tap:    60px;        /* hauteur minimale de toute cible cliquable */
+
+  --display: "Fraunces", Georgia, "Times New Roman", serif;
+  --body:    "Nunito Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+/* --------------------------------------------------------------------------
+   2. Base
+   -------------------------------------------------------------------------- */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 1.25rem;      /* 20 px */
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  margin: 0;
+  font-family: var(--display);
+  font-variation-settings: "SOFT" 50;
+  font-weight: 700;
+  line-height: 1.2;
+  text-wrap: balance;
+  color: var(--ink);
+}
+
+h2 { font-size: clamp(1.7rem, 4vw, 2.2rem); }
+
+p { margin: 0; }
+
+a { color: var(--teal-deep); text-underline-offset: .18em; }
+
+img { max-width: 100%; }
+
+/* sprite d'icônes, hors flux et invisible */
+.sprite { position: absolute; }
+
+:focus-visible {
+  outline: 3px solid var(--teal-deep);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.saut {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: var(--teal-deep);
+  color: #FFFFFF;
+  padding: 1rem 1.5rem;
+  border-radius: 0 0 var(--radius) 0;
+  text-decoration: none;
+  font-weight: 700;
+}
+.saut:focus { left: 0; }
+
+.wrap {
+  max-width: 940px;
+  margin: 0 auto;
+  padding: 0 clamp(1.25rem, 5vw, 2rem);
+}
+
+/* --------------------------------------------------------------------------
+   3. En-tête et navigation
+   Volontairement non collant : sur petit écran il mangeait de la hauteur
+   utile, et la barre d'action fixe en bas remplit déjà ce rôle.
+   -------------------------------------------------------------------------- */
+.site-head {
+  background: var(--cream);
+  border-bottom: 1px solid var(--line);
+}
+.site-head .wrap {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  min-height: 92px;
+  padding-block: 1rem;
+}
+
+.marque {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  margin-right: auto;
+  text-decoration: none;
+}
+.marque .mascotte { width: 63px; height: 56px; }
+.marque .lettrage { width: 216px; height: 24px; }
+
+.site-nav { display: flex; flex-wrap: wrap; gap: .25rem 1.75rem; }
+.site-nav a {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+  padding: .5rem 0;
+  border-bottom: 2px solid transparent;
+}
+.site-nav a:hover,
+.site-nav a[aria-current="true"] { border-bottom-color: var(--teal-deep); }
+@media (max-width: 780px) { .site-nav { display: none; } }
+
+/* --------------------------------------------------------------------------
+   4. Boutons
+   -------------------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .7rem;
+  min-height: var(--tap);
+  padding: .8rem 1.9rem;
+  font-family: var(--body);
+  font-weight: 700;
+  font-size: 1.1875rem;
+  line-height: 1.3;
+  border: 2px solid var(--teal-deep);
+  border-radius: var(--radius);
+  background: var(--teal-deep);
+  color: #FFFFFF;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;   /* un libellé d'appel ne doit jamais se couper */
+  transition: background-color .15s ease;
+}
+.btn:hover { background: var(--teal-hi); border-color: var(--teal-hi); }
+.btn--ghost { background: var(--paper); color: var(--teal-deep); }
+.btn--ghost:hover { background: var(--teal-tint); border-color: var(--teal-deep); }
+.btn svg { width: 24px; height: 24px; flex: none; }
+
+/* --------------------------------------------------------------------------
+   5. Sections
+   -------------------------------------------------------------------------- */
+section { padding: clamp(3rem, 7vw, 5rem) 0; }
+.band { background: var(--paper); border-block: 1px solid var(--line); }
+
+.sec-head { margin-bottom: 2.5rem; }
+.lede { max-width: 58ch; color: var(--ink-soft); margin-top: .9rem; }
+
+/* --------------------------------------------------------------------------
+   6. Accueil
+   -------------------------------------------------------------------------- */
+.hero .wrap {
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  gap: clamp(1.5rem, 5vw, 3.5rem);
+  align-items: center;
+}
+.hero h1 { font-size: clamp(2.1rem, 5.5vw, 3.05rem); max-width: 16ch; }
+.hero h1 em { font-style: normal; color: var(--teal-deep); }
+.hero .sub { max-width: 46ch; margin-top: 1.25rem; color: var(--ink-soft); }
+
+.cta-row { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2.25rem; }
+
+.reassure {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem 2rem;
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 1.0625rem;
+  color: var(--ink-soft);
+}
+.reassure li { display: flex; align-items: center; gap: .5rem; }
+.reassure svg { width: 20px; height: 20px; flex: none; color: var(--teal-deep); }
+
+.hero-art img { width: 100%; height: auto; display: block; }
+
+@media (max-width: 780px) {
+  .hero .wrap { grid-template-columns: 1fr; }
+  .hero-art { order: -1; max-width: 180px; }
+  .hero h1, .hero .sub { max-width: none; }
+  .cta-row .btn { width: 100%; }
+}
+
+/* --------------------------------------------------------------------------
+   7. Prestations
+   Pas d'encadré : l'icône et l'espace suffisent à séparer les entrées.
+   -------------------------------------------------------------------------- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2.25rem 3rem;
+}
+.card { display: flex; gap: 1.25rem; align-items: flex-start; }
+.card h3 { font-size: 1.3rem; margin-bottom: .25rem; }
+.card p { color: var(--ink-soft); font-size: 1.0625rem; line-height: 1.6; }
+.card-icon {
+  width: 56px;
+  height: 56px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  background: var(--teal-tint);
+  border-radius: 50%;
+  color: var(--teal-deep);
+}
+.card-icon svg { width: 28px; height: 28px; }
+
+/* --------------------------------------------------------------------------
+   8. Tarifs
+   -------------------------------------------------------------------------- */
+.price-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+.price {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: clamp(1.75rem, 4vw, 2.25rem);
+}
+.price h3 { font-size: 1.4rem; }
+.price-tag {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 2.75rem;
+  line-height: 1.1;
+  color: var(--teal-deep);
+  margin: .75rem 0 .25rem;
+  font-variant-numeric: tabular-nums;
+}
+.price-note { color: var(--ink-soft); font-size: 1.0625rem; }
+.price ul {
+  list-style: none;
+  margin: 1.35rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: .7rem;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+}
+.price li { display: flex; gap: .6rem; align-items: flex-start; }
+.price li svg { width: 20px; height: 20px; flex: none; margin-top: .3rem; color: var(--teal-deep); }
+.pay { margin-top: 2.25rem; color: var(--ink-soft); font-size: 1.0625rem; }
+.pay strong { color: var(--ink); }
+
+/* --------------------------------------------------------------------------
+   9. Zone d'intervention et plan
+   Plan dessiné en SVG plutôt qu'une carte tierce : aucune requête externe,
+   aucun consentement à demander, et rien à manipuler pour le visiteur.
+   -------------------------------------------------------------------------- */
+.zone-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 1.05fr) 1fr;
+  gap: clamp(2rem, 5vw, 3.5rem);
+  align-items: start;
+}
+@media (max-width: 860px) { .zone-layout { grid-template-columns: 1fr; } }
+
+.map { margin: 0; }
+.map svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.map figcaption { margin-top: .85rem; font-size: 1rem; color: var(--ink-soft); }
+
+.map-zone  { fill: var(--teal-tint); stroke: var(--teal-deep); stroke-opacity: .3; stroke-width: 2.5; stroke-dasharray: 11 9; }
+.map-lake  { fill: #DCE9EF; stroke: #A7C4D1; stroke-width: 2; }
+.map-canal { fill: none; stroke: #A7C4D1; stroke-width: 5; stroke-linecap: round; }
+.map-dot   { fill: var(--ink-soft); }
+.map-home  { fill: var(--teal-deep); }
+.map-ring  { fill: none; stroke: var(--teal-deep); stroke-width: 3; }
+.map-rule  { fill: none; stroke: var(--ink-soft); stroke-width: 2.5; stroke-linecap: round; }
+
+.map-t          { font-family: var(--body); font-size: 24px; fill: var(--ink-soft); }
+.map-t--major   { font-size: 26px; font-weight: 600; fill: var(--ink); }
+.map-t--home    { font-family: var(--display); font-size: 38px; font-weight: 700; fill: var(--ink); }
+.map-t--water   { font-size: 23px; font-style: italic; fill: #6E93A3; }
+.map-t--scale   { font-size: 21px; }
+/* sous 700 px les étiquettes secondaires deviennent illisibles : la liste prend le relais */
+@media (max-width: 700px) { .map-t--minor { display: none; } }
+
+.zone-list-title { font-size: 1.2rem; margin-bottom: 1.1rem; }
+.zone-more { margin-top: 1.5rem; color: var(--ink-soft); font-size: 1.0625rem; }
+
+.communes { display: flex; flex-wrap: wrap; gap: .6rem; margin: 0; padding: 0; list-style: none; }
+.communes li {
+  background: var(--sand);
+  border-radius: 999px;
+  padding: .5rem 1.15rem;
+  font-size: 1.0625rem;
+}
+.band .communes li { background: var(--cream); }
+.communes li.is-home { background: var(--teal-tint); font-weight: 700; color: var(--teal-deep); }
+
+/* --------------------------------------------------------------------------
+   10. Qui suis-je
+   -------------------------------------------------------------------------- */
+.about {
+  display: grid;
+  grid-template-columns: 170px 1fr;
+  gap: clamp(1.5rem, 5vw, 3rem);
+  align-items: start;
+}
+.about img { width: 100%; height: auto; display: block; }
+.about p { max-width: 60ch; }
+.about p + p { margin-top: 1.25rem; }
+.about .hl { color: var(--teal-deep); font-weight: 700; }
+@media (max-width: 700px) {
+  .about { grid-template-columns: 1fr; }
+  .about figure { max-width: 140px; margin: 0; }
+}
+
+/* --------------------------------------------------------------------------
+   11. Questions fréquentes
+   -------------------------------------------------------------------------- */
+.faq { max-width: 720px; }
+details { border-bottom: 1px solid var(--line); }
+details:first-child { border-top: 1px solid var(--line); }
+
+summary {
+  cursor: pointer;
+  list-style: none;
+  min-height: var(--tap);
+  padding: 1.1rem 3rem 1.1rem 0;
+  position: relative;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.25rem;
+  line-height: 1.4;
+}
+summary::-webkit-details-marker { display: none; }
+summary::after {
+  content: "";
+  position: absolute;
+  right: .5rem;
+  top: 1.55rem;
+  width: 12px;
+  height: 12px;
+  border-right: 2.5px solid var(--teal-deep);
+  border-bottom: 2.5px solid var(--teal-deep);
+  transform: rotate(45deg);
+  transition: transform .18s ease;
+}
+details[open] summary::after { transform: rotate(-135deg); top: 1.85rem; }
+details p { padding: 0 0 1.5rem; color: var(--ink-soft); font-size: 1.125rem; max-width: 58ch; }
+
+/* --------------------------------------------------------------------------
+   12. Contact
+   Le numéro est l'élément le plus gros de la page, c'est l'objectif du site.
+   -------------------------------------------------------------------------- */
+.contact-box address { font-style: normal; }  /* <address> est italique par défaut */
+.contact-box {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: clamp(1.75rem, 5vw, 3rem);
+  text-align: center;
+}
+.phone-big {
+  display: inline-block;
+  margin: 1.5rem 0 .25rem;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(2.1rem, 6vw, 3.1rem);
+  line-height: 1.2;
+  color: var(--teal-deep);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .01em;
+  /* souligné en permanence : la couleur seule ne doit jamais signaler un lien */
+  text-decoration-thickness: 2px;
+  text-underline-offset: .12em;
+}
+.phone-big:hover { text-decoration-thickness: 4px; }
+.contact-box .mail {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);   /* sinon la cible ne fait que 33 px de haut */
+  padding: 0 .75rem;
+  margin-top: 1rem;
+  font-size: 1.1875rem;
+}
+.contact-box .meta { display: block; margin-top: .3rem; color: var(--ink-soft); font-size: 1.0625rem; }
+.contact-box .who { display: block; font-family: var(--display); font-weight: 700; font-size: 1.35rem; color: var(--ink); }
+
+/* --------------------------------------------------------------------------
+   13. Pied de page
+   -------------------------------------------------------------------------- */
+footer {
+  background: var(--sand);
+  border-top: 1px solid var(--line);
+  padding: 2.5rem 0;
+  font-size: 1.0625rem;
+  color: var(--ink-soft);
+}
+footer .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem 2rem;
+  align-items: center;
+  justify-content: space-between;
+}
+footer button {
+  font: inherit;
+  color: var(--teal-deep);
+  background: none;
+  border: none;
+  padding: .5rem 0;
+  text-decoration: underline;
+  text-underline-offset: .18em;
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   14. Barre d'action fixe (mobile)
+   Seule ombre portée du site, pour la décoller du contenu qui défile dessous.
+   -------------------------------------------------------------------------- */
+.actionbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  display: none;
+  gap: .75rem;
+  background: var(--paper);
+  border-top: 1px solid var(--line);
+  box-shadow: 0 -2px 12px rgba(46, 32, 23, .1);
+  padding: .75rem clamp(.75rem, 3vw, 1.25rem);
+  padding-bottom: calc(.75rem + env(safe-area-inset-bottom));
+}
+.actionbar .btn { flex: 1; padding: .8rem .75rem; font-size: 1.0625rem; }
+@media (max-width: 780px) {
+  .actionbar { display: flex; }
+  body { padding-bottom: 92px; }
+}
+
+/* --------------------------------------------------------------------------
+   15. Conditions générales
+   <dialog> natif : fermeture par Échap et piège de focus fournis par le
+   navigateur, ce que l'ancienne modale maison n'avait pas.
+   -------------------------------------------------------------------------- */
+dialog {
+  width: calc(100% - 2rem);
+  max-width: 660px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--ink);
+}
+dialog::backdrop { background: rgba(46, 32, 23, .5); }
+
+.dlg-head {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 1.75rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+.dlg-head h2 { font-size: 1.4rem; }
+.dlg-close {
+  margin-left: auto;
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--cream);
+  color: var(--ink);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.dlg-body { padding: 1.5rem 1.75rem 2rem; font-size: 1.0625rem; }
+.dlg-body h3 { margin-top: 1.5rem; font-size: 1.125rem; color: var(--teal-deep); }
+.dlg-body p { margin-top: .4rem; color: var(--ink-soft); }
+.dlg-body p:first-child { margin-top: 0; }
+
+/* --------------------------------------------------------------------------
+   16. Préférences d'accessibilité
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+  html { scroll-behavior: auto; }
+}
