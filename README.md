@@ -22,6 +22,22 @@ publiés par GitHub Pages depuis la branche `main`.
 Les chemins d'actifs sont **relatifs**, donc le site fonctionne aussi bien à la racine
 d'un domaine que sous un sous-dossier.
 
+## ⚠️ Avant chaque commit touchant au CSS ou au JavaScript
+
+```sh
+python3 outils/versionner.py
+```
+
+GitHub Pages sert tout avec `cache-control: max-age=600`, et le HTML comme le JavaScript expirent
+chacun de leur côté. **Un visiteur peut donc recevoir un HTML neuf accompagné d'un script périmé**,
+auquel cas le formulaire ne répond plus : les boutons « Continuer » ne font rien, sans le moindre
+message d'erreur. C'est arrivé en vrai.
+
+L'outil estampille chaque actif d'un paramètre tiré de son contenu, par exemple
+`js/demande.js?v=8ec83c8b`. Le paramètre changeant dès que le fichier change, le navigateur est
+obligé de retélécharger et la désynchronisation devient impossible. L'outil est idempotent :
+le relancer sans avoir rien modifié ne touche à rien.
+
 ## Règles à respecter en modifiant le site
 
 Le public visé a 50 ans et plus. Ces règles priment sur toute considération esthétique :
