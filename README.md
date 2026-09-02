@@ -176,6 +176,21 @@ transitent par ce prestataire.
 
 ## Domaine
 
-Le domaine visé est `www.oups.it`. Le fichier `CNAME` sera ajouté **une fois le DNS
-basculé vers GitHub Pages**, pas avant : tant qu'il est absent, le site reste consultable
-à l'adresse de repli en `github.io`, ce qui permet de le vérifier.
+Le domaine du site est **`oups.it`**, sans `www`, comme l'indique le fichier `CNAME`.
+Toutes les adresses annoncées par le site (canonical, Open Graph, sitemap, robots.txt,
+JSON-LD) pointent sur cet apex. `www.oups.it` redirige dessus.
+
+Pour que GitHub Pages serve réellement ce domaine, l'apex doit pointer sur ses adresses :
+
+| Type | Nom | Valeur |
+|---|---|---|
+| A | `@` | `185.199.108.153` |
+| A | `@` | `185.199.109.153` |
+| A | `@` | `185.199.110.153` |
+| A | `@` | `185.199.111.153` |
+
+**Chez Cloudflare, mettre ces enregistrements en « DNS only »**, nuage gris. Tant que le proxy
+orange est actif, GitHub n'arrive pas à émettre le certificat TLS du domaine.
+
+⚠️ **Ne pas toucher aux enregistrements MX ni au TXT SPF** : ils appartiennent à la messagerie
+Infomaniak du domaine. Voir l'avertissement de la section « Formulaire de demande ».
